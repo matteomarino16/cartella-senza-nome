@@ -456,7 +456,8 @@
     function onPointerUp(e) {
       if (!dragging) return;
       dragging = false;
-      lastDragEndAt = performance.now();
+      if (moved) lastDragEndAt = performance.now();
+      moved = false;
       if (main.releasePointerCapture) main.releasePointerCapture(e.pointerId);
       if (Math.abs(velocity.x) > 0.005 || Math.abs(velocity.y) > 0.005) startInertia(velocity.x, velocity.y);
     }
