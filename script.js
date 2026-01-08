@@ -295,6 +295,7 @@
     let lastMove = null;
     let inertiaRaf = null;
     let velocity = { x: 0, y: 0 };
+    let pointerDownTile = null;
 
     let focusedTile = null;
     let enlargeEl = null;
@@ -396,17 +397,26 @@
       img.src = galleryImages[currentIndex] || tileSrc;
       overlayEl.appendChild(img);
 
-      let swipeStartX = null;
+      let swipeStart = null;
       overlayEl.addEventListener('pointerdown', e => {
-        swipeStartX = e.clientX;
+        swipeStart = { x: e.clientX, y: e.clientY };
+        if (overlayEl.setPointerCapture) overlayEl.setPointerCapture(e.pointerId);
       });
       overlayEl.addEventListener('pointerup', e => {
-        if (swipeStartX == null) return;
-        const dx = e.clientX - swipeStartX;
-        swipeStartX = null;
-        if (Math.abs(dx) < 40) return;
+        if (!swipeStart) return;
+        const dx = e.clientX - swipeStart.x;
+        const dy = e.clientY - swipeStart.y;
+        swipeStart = null;
+        if (overlayEl.releasePointerCapture) overlayEl.releasePointerCapture(e.pointerId);
+
+        if (Math.abs(dx) < 50) return;
+        if (Math.abs(dx) < Math.abs(dy) * 1.2) return;
         if (dx < 0) showIndex(currentIndex + 1);
         else showIndex(currentIndex - 1);
+      });
+      overlayEl.addEventListener('pointercancel', e => {
+        swipeStart = null;
+        if (overlayEl.releasePointerCapture) overlayEl.releasePointerCapture(e.pointerId);
       });
 
       viewer.appendChild(overlayEl);
@@ -421,6 +431,7 @@
       dragging = true;
       moved = false;
       stopInertia();
+      pointerDownTile = e.target && e.target.closest ? e.target.closest('.item__image') : null;
       startPos.x = e.clientX;
       startPos.y = e.clientY;
       startRot.x = rotation.x;
@@ -455,11 +466,15 @@
 
     function onPointerUp(e) {
       if (!dragging) return;
+      const shouldOpenTile = !moved && !!pointerDownTile;
+      const tileToOpen = pointerDownTile;
       dragging = false;
       if (moved) lastDragEndAt = performance.now();
       moved = false;
+      pointerDownTile = null;
       if (main.releasePointerCapture) main.releasePointerCapture(e.pointerId);
       if (Math.abs(velocity.x) > 0.005 || Math.abs(velocity.y) > 0.005) startInertia(velocity.x, velocity.y);
+      if (shouldOpenTile && tileToOpen) openFromTile(tileToOpen);
     }
 
     main.addEventListener('pointerdown', onPointerDown);
@@ -468,10 +483,10 @@
     main.addEventListener('pointercancel', onPointerUp);
 
     sphere.querySelectorAll('.item__image').forEach(tile => {
-      tile.addEventListener('click', e => openFromTile(e.currentTarget));
-      tile.addEventListener('pointerup', e => {
-        if (e.pointerType !== 'touch') return;
-        openFromTile(e.currentTarget);
+      tile.addEventListener('keydown', e => {
+        if (e.key !== 'Enter' && e.key !== ' ') return;
+        e.preventDefault();
+        openFromTile(tile);
       });
     });
 
@@ -479,12 +494,13 @@
     closeBtn.addEventListener('click', closeEnlarge);
     prevBtn.addEventListener('click', () => showIndex(currentIndex - 1));
     nextBtn.addEventListener('click', () => showIndex(currentIndex + 1));
-    window.addEventListener('keydown', e => {
+    const onKeyDown = e => {
       if (e.key === 'Escape') closeEnlarge();
       if (root.getAttribute('data-enlarging') !== 'true') return;
       if (e.key === 'ArrowLeft') showIndex(currentIndex - 1);
       if (e.key === 'ArrowRight') showIndex(currentIndex + 1);
-    });
+    };
+    window.addEventListener('keydown', onKeyDown);
 
     const ro = new ResizeObserver(entries => {
       const cr = entries[0].contentRect;
@@ -537,7 +553,7 @@
       main.removeEventListener('pointermove', onPointerMove);
       main.removeEventListener('pointerup', onPointerUp);
       main.removeEventListener('pointercancel', onPointerUp);
-      window.removeEventListener('keydown', closeEnlarge);
+      window.removeEventListener('keydown', onKeyDown);
       root.remove();
       unlockScroll();
     };
