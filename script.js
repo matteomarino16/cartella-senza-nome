@@ -83,31 +83,38 @@
   }
 
   const DEFAULT_IMAGES = [
-    {
-      src: 'https://images.unsplash.com/photo-1755331039789-7e5680e26e8f?q=80&w=774&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-      alt: 'Abstract art'
-    },
-    {
-      src: 'https://images.unsplash.com/photo-1755569309049-98410b94f66d?q=80&w=772&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-      alt: 'Modern sculpture'
-    },
-    {
-      src: 'https://images.unsplash.com/photo-1755497595318-7e5e3523854f?q=80&w=774&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-      alt: 'Digital artwork'
-    },
-    {
-      src: 'https://images.unsplash.com/photo-1755353985163-c2a0fe5ac3d8?q=80&w=774&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-      alt: 'Contemporary art'
-    },
-    {
-      src: 'https://images.unsplash.com/photo-1745965976680-d00be7dc0377?q=80&w=774&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-      alt: 'Geometric pattern'
-    },
-    {
-      src: 'https://images.unsplash.com/photo-1752588975228-21f44630bb3c?q=80&w=774&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-      alt: 'Textured surface'
-    },
-    { src: 'https://pbs.twimg.com/media/Gyla7NnXMAAXSo_?format=jpg&name=large', alt: 'Social media image' }
+    'foto/588665308_17909099940276766_928416036352322985_n.jpeg',
+    'foto/SnapInsta.to_450149310_1005556387466881_5208494146935274280_n.jpg',
+    'foto/SnapInsta.to_462513356_570566022068141_4723863725904009314_n.jpg',
+    'foto/SnapInsta.to_501522370_17887105701276766_2531496049446557552_n.jpg',
+    'foto/SnapInsta.to_501597704_17887105692276766_6131001459093330877_n.jpg',
+    'foto/SnapInsta.to_526445936_18513872728046382_2030986599807307265_n.jpg',
+    'foto/SnapInsta.to_526590357_18513872704046382_6368367978550388487_n.jpg',
+    'foto/SnapInsta.to_526616336_18513872632046382_449656303098729916_n.jpg',
+    'foto/SnapInsta.to_526749647_18513872599046382_2416359525427572614_n.jpg',
+    'foto/SnapInsta.to_527148157_18513872746046382_7744660904736767951_n.jpg',
+    'foto/SnapInsta.to_527161912_18513872665046382_1860942728023364546_n.jpg',
+    'foto/SnapInsta.to_527391941_18513872650046382_2408536109517205974_n.jpg',
+    'foto/SnapInsta.to_527488141_18513872719046382_5856824282604510465_n.jpg',
+    'foto/SnapInsta.to_528032747_18513872680046382_974627040226300982_n.jpg',
+    'foto/SnapInsta.to_534317631_17897115468276766_5448618772879368822_n.jpg',
+    'foto/SnapInsta.to_535052058_17897115459276766_4406223951782689557_n.jpg',
+    'foto/SnapInsta.to_535056482_17897115450276766_5949168411527386542_n.jpg',
+    'foto/SnapInsta.to_536663510_17897115441276766_4959488097667154373_n.jpg',
+    'foto/SnapInsta.to_550785907_17900880135276766_982647241851230940_n.jpg',
+    'foto/SnapInsta.to_550860763_17900880162276766_5747060900231008260_n.jpg',
+    'foto/SnapInsta.to_584037041_17907455589276766_5157358910638608213_n.jpg',
+    'foto/SnapInsta.to_586663076_17907455553276766_8747698618963906629_n.jpg',
+    'foto/SnapInsta.to_586683907_18541367335046382_2886026434628958112_n.jpg',
+    'foto/SnapInsta.to_586720708_18541367566046382_3335996435246954050_n.jpg',
+    'foto/SnapInsta.to_586873139_17907455562276766_8938545650830162956_n.jpg',
+    'foto/SnapInsta.to_587431965_18541367332046382_2714695777272285518_n.jpg',
+    'foto/SnapInsta.to_587750901_18541367464046382_2201705062819921296_n.jpg',
+    'foto/SnapInsta.to_587755260_18541367476046382_6897834849515114349_n.jpg',
+    'foto/SnapInsta.to_590812123_18541367533046382_1416851289453352256_n.jpg',
+    'foto/SnapInsta.to_590888426_18541367506046382_419355760353245822_n.jpg',
+    'foto/SnapInsta.to_599840274_18541367359046382_1467601753999161706_n.jpg',
+    'foto/SnapInsta.to_602344942_18541367542046382_5569509533674785590_n.jpg'
   ];
 
   const clamp = (v, min, max) => Math.min(Math.max(v, min), max);
@@ -176,6 +183,10 @@
     const imageBorderRadius = options.imageBorderRadius || '30px';
     const openedImageBorderRadius = options.openedImageBorderRadius || '30px';
     const grayscale = options.grayscale !== false;
+
+    const galleryImages = (Array.isArray(images) ? images : [])
+      .map(img => (typeof img === 'string' ? img : img?.src))
+      .filter(Boolean);
 
     container.innerHTML = '';
 
@@ -250,13 +261,26 @@
     const scrim = document.createElement('div');
     scrim.className = 'scrim';
 
-    const frame = document.createElement('div');
-    frame.className = 'frame';
-    frame.style.width = openedImageWidth;
-    frame.style.height = openedImageHeight;
-
     viewer.appendChild(scrim);
-    viewer.appendChild(frame);
+
+    const closeBtn = document.createElement('button');
+    closeBtn.type = 'button';
+    closeBtn.className = 'dg-close';
+    closeBtn.textContent = '×';
+    viewer.appendChild(closeBtn);
+
+    const prevBtn = document.createElement('button');
+    prevBtn.type = 'button';
+    prevBtn.className = 'dg-nav dg-nav--prev';
+    prevBtn.textContent = '‹';
+    viewer.appendChild(prevBtn);
+
+    const nextBtn = document.createElement('button');
+    nextBtn.type = 'button';
+    nextBtn.className = 'dg-nav dg-nav--next';
+    nextBtn.textContent = '›';
+    viewer.appendChild(nextBtn);
+
     main.appendChild(viewer);
 
     root.appendChild(main);
@@ -274,6 +298,7 @@
 
     let focusedTile = null;
     let enlargeEl = null;
+    let currentIndex = 0;
 
     function applyTransform() {
       sphere.style.transform = `translateZ(calc(var(--radius) * -1)) rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)`;
@@ -329,36 +354,25 @@
     }
 
     function closeEnlarge() {
-      if (!enlargeEl || !focusedTile) {
-        root.removeAttribute('data-enlarging');
-        unlockScroll();
-        return;
-      }
-
-      const mainR = main.getBoundingClientRect();
-      const frameR = frame.getBoundingClientRect();
-      const tileR = focusedTile.getBoundingClientRect();
-
-      const tx0 = tileR.left - frameR.left;
-      const ty0 = tileR.top - frameR.top;
-      const sx0 = tileR.width / frameR.width;
-      const sy0 = tileR.height / frameR.height;
-
-      enlargeEl.style.opacity = '0';
-      enlargeEl.style.transform = `translate(${tx0}px, ${ty0}px) scale(${isFinite(sx0) && sx0 > 0 ? sx0 : 1}, ${isFinite(sy0) && sy0 > 0 ? sy0 : 1})`;
-
-      const onEnd = () => {
-        enlargeEl && enlargeEl.removeEventListener('transitionend', onEnd);
-        if (enlargeEl) enlargeEl.remove();
+      if (enlargeEl) {
+        enlargeEl.remove();
         enlargeEl = null;
-        if (focusedTile) focusedTile.style.visibility = '';
+      }
+      if (focusedTile) {
+        focusedTile.style.visibility = '';
         focusedTile = null;
-        root.removeAttribute('data-enlarging');
-        unlockScroll();
-      };
+      }
+      root.removeAttribute('data-enlarging');
+      unlockScroll();
+    }
 
-      enlargeEl.addEventListener('transitionend', onEnd);
-      void mainR;
+    function showIndex(nextIndex) {
+      if (galleryImages.length === 0) return;
+      const len = galleryImages.length;
+      currentIndex = ((nextIndex % len) + len) % len;
+      if (!enlargeEl) return;
+      const img = enlargeEl.querySelector('img');
+      if (img) img.src = galleryImages[currentIndex];
     }
 
     function openFromTile(tile) {
@@ -370,44 +384,35 @@
       lockScroll();
       focusedTile = tile;
 
-      const mainR = main.getBoundingClientRect();
-      const frameR = frame.getBoundingClientRect();
-      const tileR = tile.getBoundingClientRect();
+      const rawSrc = tile.parentElement && tile.parentElement.dataset ? tile.parentElement.dataset.src : '';
+      const tileSrc = rawSrc || tile.querySelector('img')?.src || '';
+      const idx = galleryImages.indexOf(tileSrc);
+      currentIndex = idx >= 0 ? idx : 0;
 
       const overlayEl = document.createElement('div');
-      overlayEl.className = 'enlarge';
-      overlayEl.style.left = frameR.left - mainR.left + 'px';
-      overlayEl.style.top = frameR.top - mainR.top + 'px';
-      overlayEl.style.width = frameR.width + 'px';
-      overlayEl.style.height = frameR.height + 'px';
-      overlayEl.style.opacity = '0';
-      overlayEl.style.willChange = 'transform, opacity';
-      overlayEl.style.transformOrigin = 'top left';
-      overlayEl.style.transition = `transform ${enlargeTransitionMs}ms ease, opacity ${enlargeTransitionMs}ms ease`;
+      overlayEl.className = 'dg-lightbox';
 
-      const rawSrc = tile.parentElement && tile.parentElement.dataset ? tile.parentElement.dataset.src : '';
       const img = document.createElement('img');
-      img.src = rawSrc || tile.querySelector('img')?.src || '';
+      img.src = galleryImages[currentIndex] || tileSrc;
       overlayEl.appendChild(img);
+
+      let swipeStartX = null;
+      overlayEl.addEventListener('pointerdown', e => {
+        swipeStartX = e.clientX;
+      });
+      overlayEl.addEventListener('pointerup', e => {
+        if (swipeStartX == null) return;
+        const dx = e.clientX - swipeStartX;
+        swipeStartX = null;
+        if (Math.abs(dx) < 40) return;
+        if (dx < 0) showIndex(currentIndex + 1);
+        else showIndex(currentIndex - 1);
+      });
 
       viewer.appendChild(overlayEl);
       enlargeEl = overlayEl;
-
       tile.style.visibility = 'hidden';
-
-      const tx0 = tileR.left - frameR.left;
-      const ty0 = tileR.top - frameR.top;
-      const sx0 = tileR.width / frameR.width;
-      const sy0 = tileR.height / frameR.height;
-
-      overlayEl.style.transform = `translate(${tx0}px, ${ty0}px) scale(${isFinite(sx0) && sx0 > 0 ? sx0 : 1}, ${isFinite(sy0) && sy0 > 0 ? sy0 : 1})`;
-
-      setTimeout(() => {
-        if (!overlayEl.parentElement) return;
-        overlayEl.style.opacity = '1';
-        overlayEl.style.transform = 'translate(0px, 0px) scale(1, 1)';
-        root.setAttribute('data-enlarging', 'true');
-      }, 16);
+      root.setAttribute('data-enlarging', 'true');
     }
 
     function onPointerDown(e) {
@@ -470,8 +475,14 @@
     });
 
     scrim.addEventListener('click', closeEnlarge);
+    closeBtn.addEventListener('click', closeEnlarge);
+    prevBtn.addEventListener('click', () => showIndex(currentIndex - 1));
+    nextBtn.addEventListener('click', () => showIndex(currentIndex + 1));
     window.addEventListener('keydown', e => {
       if (e.key === 'Escape') closeEnlarge();
+      if (root.getAttribute('data-enlarging') !== 'true') return;
+      if (e.key === 'ArrowLeft') showIndex(currentIndex - 1);
+      if (e.key === 'ArrowRight') showIndex(currentIndex + 1);
     });
 
     const ro = new ResizeObserver(entries => {
@@ -548,4 +559,3 @@
     boot();
   }
 })();
-
