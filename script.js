@@ -296,6 +296,8 @@
     let inertiaRaf = null;
     let velocity = { x: 0, y: 0 };
     let pointerDownTile = null;
+    const TAP_SLOP_PX = 10;
+    const TAP_SLOP2 = TAP_SLOP_PX * TAP_SLOP_PX;
 
     let focusedTile = null;
     let enlargeEl = null;
@@ -376,10 +378,9 @@
       if (img) img.src = galleryImages[currentIndex];
     }
 
-    function openFromTile(tile) {
+    function openFromTile(tile, ignoreRecentDrag) {
       if (dragging) return;
-      if (moved) return;
-      if (performance.now() - lastDragEndAt < 80) return;
+      if (!ignoreRecentDrag && performance.now() - lastDragEndAt < 120) return;
       if (root.getAttribute('data-enlarging') === 'true') return;
 
       lockScroll();
@@ -448,7 +449,8 @@
       const dyTotal = e.clientY - startPos.y;
       if (!moved) {
         const dist2 = dxTotal * dxTotal + dyTotal * dyTotal;
-        if (dist2 > 16) moved = true;
+        if (dist2 <= TAP_SLOP2) return;
+        moved = true;
       }
 
       rotation.x = clamp(startRot.x - dyTotal / dragSensitivity, -maxVerticalRotationDeg, maxVerticalRotationDeg);
@@ -466,27 +468,35 @@
 
     function onPointerUp(e) {
       if (!dragging) return;
-      const shouldOpenTile = !moved && !!pointerDownTile;
       const tileToOpen = pointerDownTile;
+      const wasMoved = moved;
       dragging = false;
-      if (moved) lastDragEndAt = performance.now();
+      if (wasMoved) lastDragEndAt = performance.now();
       moved = false;
       pointerDownTile = null;
       if (main.releasePointerCapture) main.releasePointerCapture(e.pointerId);
-      if (Math.abs(velocity.x) > 0.005 || Math.abs(velocity.y) > 0.005) startInertia(velocity.x, velocity.y);
-      if (shouldOpenTile && tileToOpen) openFromTile(tileToOpen);
+      if (wasMoved && (Math.abs(velocity.x) > 0.005 || Math.abs(velocity.y) > 0.005)) startInertia(velocity.x, velocity.y);
+      if (!wasMoved && tileToOpen) openFromTile(tileToOpen, true);
+    }
+
+    function onPointerCancel(e) {
+      if (!dragging) return;
+      dragging = false;
+      moved = false;
+      pointerDownTile = null;
+      if (main.releasePointerCapture) main.releasePointerCapture(e.pointerId);
     }
 
     main.addEventListener('pointerdown', onPointerDown);
     main.addEventListener('pointermove', onPointerMove);
     main.addEventListener('pointerup', onPointerUp);
-    main.addEventListener('pointercancel', onPointerUp);
+    main.addEventListener('pointercancel', onPointerCancel);
 
     sphere.querySelectorAll('.item__image').forEach(tile => {
       tile.addEventListener('keydown', e => {
         if (e.key !== 'Enter' && e.key !== ' ') return;
         e.preventDefault();
-        openFromTile(tile);
+        openFromTile(tile, true);
       });
     });
 
