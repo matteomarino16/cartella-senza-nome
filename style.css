@@ -53,6 +53,60 @@ main.sphere-main {
     background: #000;
 }
 
+.sphere-root[data-enlarging='true'] main.sphere-main {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+}
+
+.sphere-root[data-layout='stack'] main.sphere-main {
+    overflow-y: auto;
+    overflow-x: hidden;
+    touch-action: pan-y;
+    -webkit-overflow-scrolling: touch;
+}
+
+.sphere-root[data-layout='stack'] .stage {
+    perspective: none;
+    align-items: start;
+}
+
+.sphere-root[data-layout='stack'] .sphere {
+    transform: none;
+    will-change: auto;
+    width: 100%;
+    padding: 84px 16px 18px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    overflow: visible;
+    scroll-snap-type: y mandatory;
+}
+
+.sphere-root[data-layout='stack'] .item {
+    position: relative;
+    top: auto;
+    bottom: auto;
+    left: auto;
+    right: auto;
+    margin: 0;
+    width: min(92vw, 520px);
+    height: min(64vh, 520px);
+    transform: none;
+    transition: none;
+    flex: 0 0 auto;
+    scroll-snap-align: center;
+}
+
+.sphere-root[data-layout='stack'] .item__image {
+    inset: 0;
+}
+
+.sphere-root[data-layout='stack'] .item__image img {
+    object-fit: cover;
+}
+
 .stage {
     width: 100%;
     height: 100%;
@@ -61,6 +115,15 @@ main.sphere-main {
     perspective: calc(var(--radius) * 2);
     perspective-origin: 50% 50%;
     contain: layout paint size;
+    position: relative;
+}
+
+.sphere-wrap {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    place-items: center;
+    transform-style: preserve-3d;
 }
 
 .sphere {
@@ -455,28 +518,26 @@ footer {
     font-size: 0.8rem;
 }
 
-.footer-instagram {
-    margin-bottom: 15px;
+.footer-icons {
+    margin-bottom: 14px;
     text-align: center;
+    display: flex;
+    justify-content: center;
+    gap: 18px;
 }
 
-.footer-instagram .instagram-icon {
+.footer-icons .instagram-icon {
     font-size: 28px;
     color: #fff;
 }
 
-.footer-cookies {
-    margin-bottom: 10px;
-    text-align: center;
-}
-
-.footer-cookies .cookies-icon {
+.footer-icons .cookies-icon {
     font-size: 24px;
     color: #fff;
     transition: transform 0.3s ease;
 }
 
-.footer-cookies .cookies-icon:hover {
+.footer-icons .cookies-icon:hover {
     transform: rotate(20deg);
 }
 
@@ -531,6 +592,24 @@ footer p {
 
 /* Responsive */
 @media (max-width: 768px) {
+    .sphere-root[data-rotate-mobile='true'] .sphere-wrap {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 100dvh;
+        height: 100dvw;
+        transform: translate(-50%, -50%) rotate(90deg) scale(1.08);
+    }
+
+    .sphere-root[data-rotate-mobile='true'] .item__image img {
+        transform: rotate(-90deg) scale(1.02);
+        transform-origin: 50% 50%;
+    }
+
+    .item__image {
+        inset: 6px;
+    }
+
     .hero-under {
         background-image: url('heromobile.jpg');
         background-position: center;

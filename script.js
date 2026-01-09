@@ -123,8 +123,9 @@
     return a - 180;
   };
 
-  function buildItems(pool, segments) {
-    const xCols = Array.from({ length: segments }, (_, i) => -37 + i * 2);
+  function buildItemsClassic(pool, segmentsX) {
+    const xHalf = Math.floor(segmentsX / 2);
+    const xCols = Array.from({ length: segmentsX }, (_, i) => (i - xHalf) * 2);
     const evenYs = [-4, -2, 0, 2, 4];
     const oddYs = [-3, -1, 1, 3, 5];
 
@@ -133,6 +134,35 @@
       return ys.map(y => ({ x, y, sizeX: 2, sizeY: 2 }));
     });
 
+    return fillCoordsWithImages(coords, pool);
+  }
+
+  function buildItemsVertical(pool, segmentsX, segmentsY) {
+    const xHalf = Math.floor(segmentsX / 2);
+    const yHalf = Math.floor(segmentsY / 2);
+    const xCols = Array.from({ length: segmentsX }, (_, i) => (i - xHalf) * 2);
+    const baseYs = Array.from({ length: segmentsY }, (_, i) => (i - yHalf) * 2);
+
+    const coords = xCols.flatMap((x, c) => {
+      const ys = c % 2 === 0 ? baseYs : baseYs.map(v => v + 1);
+      return ys.map(y => ({ x, y, sizeX: 2, sizeY: 2 }));
+    });
+
+    return fillCoordsWithImages(coords, pool);
+  }
+
+  function buildItemsStack(pool) {
+    if (!pool || pool.length === 0) return [];
+    const normalized = pool.map(image => {
+      if (typeof image === 'string') return { src: image, alt: '' };
+      return { src: image?.src || '', alt: image?.alt || '' };
+    });
+    return normalized
+      .filter(img => !!img.src)
+      .map((img, i) => ({ x: 0, y: i, sizeX: 1, sizeY: 1, src: img.src, alt: img.alt }));
+  }
+
+  function fillCoordsWithImages(coords, pool) {
     const totalSlots = coords.length;
     if (!pool || pool.length === 0) {
       return coords.map(c => ({ ...c, src: '', alt: '' }));
@@ -167,6 +197,9 @@
   function initDomeGallery(container, opts) {
     const options = opts || {};
     const images = options.images || DEFAULT_IMAGES;
+    const layout = options.layout || 'classic';
+    const lockHorizontalRotation = options.lockHorizontalRotation === true;
+    const rotateMobile = options.rotateMobile === true;
     const fit = typeof options.fit === 'number' ? options.fit : 0.5;
     const fitBasis = options.fitBasis || 'auto';
     const minRadius = typeof options.minRadius === 'number' ? options.minRadius : 600;
@@ -177,6 +210,8 @@
     const dragSensitivity = typeof options.dragSensitivity === 'number' ? options.dragSensitivity : 20;
     const enlargeTransitionMs = typeof options.enlargeTransitionMs === 'number' ? options.enlargeTransitionMs : 300;
     const segments = typeof options.segments === 'number' ? options.segments : 35;
+    const segmentsX = typeof options.segmentsX === 'number' ? options.segmentsX : segments;
+    const segmentsY = typeof options.segmentsY === 'number' ? options.segmentsY : segments;
     const dragDampening = typeof options.dragDampening === 'number' ? options.dragDampening : 2;
     const openedImageWidth = options.openedImageWidth || '250px';
     const openedImageHeight = options.openedImageHeight || '350px';
@@ -192,8 +227,10 @@
 
     const root = document.createElement('div');
     root.className = 'sphere-root';
-    root.style.setProperty('--segments-x', String(segments));
-    root.style.setProperty('--segments-y', String(segments));
+    root.setAttribute('data-layout', layout);
+    if (rotateMobile) root.setAttribute('data-rotate-mobile', 'true');
+    root.style.setProperty('--segments-x', String(segmentsX));
+    root.style.setProperty('--segments-y', String(segmentsY));
     root.style.setProperty('--overlay-blur-color', overlayBlurColor);
     root.style.setProperty('--tile-radius', imageBorderRadius);
     root.style.setProperty('--enlarge-radius', openedImageBorderRadius);
@@ -208,7 +245,12 @@
     const sphere = document.createElement('div');
     sphere.className = 'sphere';
 
-    const items = buildItems(images, segments);
+    const items =
+      layout === 'stack'
+        ? buildItemsStack(images)
+        : layout === 'vertical'
+          ? buildItemsVertical(images, segmentsX, segmentsY)
+          : buildItemsClassic(images, segmentsX);
     for (let i = 0; i < items.length; i++) {
       const it = items[i];
 
@@ -236,7 +278,10 @@
       sphere.appendChild(item);
     }
 
-    stage.appendChild(sphere);
+    const sphereWrap = document.createElement('div');
+    sphereWrap.className = 'sphere-wrap';
+    sphereWrap.appendChild(sphere);
+    stage.appendChild(sphereWrap);
     main.appendChild(stage);
 
     const overlay = document.createElement('div');
@@ -445,23 +490,27 @@
 
     function onPointerMove(e) {
       if (!dragging) return;
-      const dxTotal = e.clientX - startPos.x;
-      const dyTotal = e.clientY - startPos.y;
+      const rawDxTotal = e.clientX - startPos.x;
+      const rawDyTotal = e.clientY - startPos.y;
+      const dxTotal = rotateMobile ? -rawDyTotal : rawDxTotal;
+      const dyTotal = rotateMobile ? rawDxTotal : rawDyTotal;
       if (!moved) {
-        const dist2 = dxTotal * dxTotal + dyTotal * dyTotal;
+        const dist2 = rawDxTotal * rawDxTotal + rawDyTotal * rawDyTotal;
         if (dist2 <= TAP_SLOP2) return;
         moved = true;
       }
 
       rotation.x = clamp(startRot.x - dyTotal / dragSensitivity, -maxVerticalRotationDeg, maxVerticalRotationDeg);
-      rotation.y = wrapAngleSigned(startRot.y + dxTotal / dragSensitivity);
+      rotation.y = lockHorizontalRotation ? startRot.y : wrapAngleSigned(startRot.y + dxTotal / dragSensitivity);
       applyTransform();
 
       const now = performance.now();
       const dt = now - (lastMove ? lastMove.t : now);
       if (dt > 0) {
-        velocity.x = (e.clientX - (lastMove ? lastMove.x : e.clientX)) / dt;
-        velocity.y = (e.clientY - (lastMove ? lastMove.y : e.clientY)) / dt;
+        const rawVx = (e.clientX - (lastMove ? lastMove.x : e.clientX)) / dt;
+        const rawVy = (e.clientY - (lastMove ? lastMove.y : e.clientY)) / dt;
+        velocity.x = rotateMobile ? -rawVy : rawVx;
+        velocity.y = rotateMobile ? rawVx : rawVy;
         lastMove = { t: now, x: e.clientX, y: e.clientY };
       }
     }
@@ -487,12 +536,19 @@
       if (main.releasePointerCapture) main.releasePointerCapture(e.pointerId);
     }
 
-    main.addEventListener('pointerdown', onPointerDown);
-    main.addEventListener('pointermove', onPointerMove);
-    main.addEventListener('pointerup', onPointerUp);
-    main.addEventListener('pointercancel', onPointerCancel);
+    const enableDrag = layout !== 'stack';
+    if (enableDrag) {
+      main.addEventListener('pointerdown', onPointerDown);
+      main.addEventListener('pointermove', onPointerMove);
+      main.addEventListener('pointerup', onPointerUp);
+      main.addEventListener('pointercancel', onPointerCancel);
+    }
 
     sphere.querySelectorAll('.item__image').forEach(tile => {
+      if (!enableDrag) {
+        tile.addEventListener('click', () => openFromTile(tile, true));
+        tile.addEventListener('pointerup', () => openFromTile(tile, true));
+      }
       tile.addEventListener('keydown', e => {
         if (e.key !== 'Enter' && e.key !== ' ') return;
         e.preventDefault();
@@ -559,10 +615,12 @@
     return () => {
       stopInertia();
       ro.disconnect();
-      main.removeEventListener('pointerdown', onPointerDown);
-      main.removeEventListener('pointermove', onPointerMove);
-      main.removeEventListener('pointerup', onPointerUp);
-      main.removeEventListener('pointercancel', onPointerUp);
+      if (enableDrag) {
+        main.removeEventListener('pointerdown', onPointerDown);
+        main.removeEventListener('pointermove', onPointerMove);
+        main.removeEventListener('pointerup', onPointerUp);
+        main.removeEventListener('pointercancel', onPointerCancel);
+      }
       window.removeEventListener('keydown', onKeyDown);
       root.remove();
       unlockScroll();
@@ -576,7 +634,23 @@
 
     const galleryRoot = document.getElementById('dome-gallery-root');
     if (galleryRoot) {
-      initDomeGallery(galleryRoot, { maxVerticalRotationDeg: 9, grayscale: false });
+      const isMobile = !!(window.matchMedia && window.matchMedia('(max-width: 768px)').matches);
+      initDomeGallery(
+        galleryRoot,
+        isMobile
+          ? {
+              minRadius: 320,
+              maxRadius: 820,
+              fit: 0.68,
+              fitBasis: 'min',
+              padFactor: 0.16,
+              maxVerticalRotationDeg: 9,
+              rotateMobile: true,
+              imageBorderRadius: '0px',
+              grayscale: false
+            }
+          : { maxVerticalRotationDeg: 9, imageBorderRadius: '0px', grayscale: false }
+      );
     }
   }
 
